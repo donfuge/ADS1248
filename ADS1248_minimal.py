@@ -76,7 +76,7 @@ GPIO.setup(ADS1248.STARTPIN, GPIO.OUT)
 GPIO.output(ADS1248.STARTPIN,GPIO.HIGH)
 
 def ADCinit():	
-	RegWrite(ADS1248.MUX0, 0b00001100);	# MUX0:  . input: AIN1, . input: AIN0 (Burnout current source off, 
+	RegWrite(ADS1248.MUX0, 0b00001100);	# MUX0:  Pos. input: AIN1, Neg. input: AIN4 (Burnout current source off) 
 	RegWrite(ADS1248.MUX1, 0b00100000);	# MUX1:  REF0, normal operation
 	RegWrite(ADS1248.SYS0, 0b00000010);	# SYS0:  PGA Gain = 1, 20 SPS
 	RegWrite(ADS1248.IDAC0,0b00000000);	# IDAC0: off
