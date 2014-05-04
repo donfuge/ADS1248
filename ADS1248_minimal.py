@@ -1,4 +1,5 @@
 #!/usr/bin/python
+# -*- coding: utf-8 -*-
 #import the library
 from Adafruit_BBIO.SPI import  SPI
 import Adafruit_BBIO.GPIO as GPIO
@@ -51,13 +52,22 @@ def ReadADC():
 	a=spi.readbytes(3)
 	spi.writebytes([ADS1248.NOP]) # sending NOP
 
-	print (a[0]<<16)+(a[1]<<8)+a[2]
-	print a[0]
-	print a[1]
-	print a[2]
-	print "\n"
-	return False
+	return a
 
+def ADCinit():	
+	RegWrite(ADS1248.MUX0, 0b00000001);	# MUX0:  Pos. input: AIN0, Neg. input: AIN1 (Burnout current source off) 
+	RegWrite(ADS1248.MUX1, 0b00100000);	# MUX1:  REF0, normal operation
+	RegWrite(ADS1248.SYS0, 0b00000000);	# SYS0:  PGA Gain = 1, 5 SPS
+	RegWrite(ADS1248.IDAC0,0b00000000);	# IDAC0: off
+	RegWrite(ADS1248.IDAC1,0b11001100);	# IDAC1: n.c.
+	RegWrite(ADS1248.VBIAS,0b00000000);	# VBIAS: BIAS voltage disabled
+ 	RegWrite(ADS1248.OFC0, 0b00000000);	# OFC0:  0 => reset offset calibration
+	RegWrite(ADS1248.OFC1, 0b00000000);	# OFC1:  0 => reset offset calibration
+	RegWrite(ADS1248.OFC2, 0b00000000);	# OFC2:  0 => reset offset calibration
+	RegWrite(ADS1248.GPIOCFG, 0b00000000);	# GPIOCFG: all used as analog inputs
+	RegWrite(ADS1248.GPIODIR, 0b00000000);	# GPIODIR: -
+	RegWrite(ADS1248.GPIODAT, 0b00000000);	# GPIODAT: -
+	
 spi = SPI(0,0)	#/dev/spidev1.0
 spi.msh=10000 # SPI clock set to 100 kHz
 spi.bpw = 8  # bits/word
@@ -75,19 +85,7 @@ GPIO.setup("P9_14", GPIO.OUT)
 GPIO.setup(ADS1248.STARTPIN, GPIO.OUT)
 GPIO.output(ADS1248.STARTPIN,GPIO.HIGH)
 
-def ADCinit():	
-	RegWrite(ADS1248.MUX0, 0b00001100);	# MUX0:  Pos. input: AIN1, Neg. input: AIN4 (Burnout current source off) 
-	RegWrite(ADS1248.MUX1, 0b00100000);	# MUX1:  REF0, normal operation
-	RegWrite(ADS1248.SYS0, 0b00000010);	# SYS0:  PGA Gain = 1, 20 SPS
-	RegWrite(ADS1248.IDAC0,0b00000000);	# IDAC0: off
-	RegWrite(ADS1248.IDAC1,0b11001100);	# IDAC1: n.c.
-	RegWrite(ADS1248.VBIAS,0b00000000);	# VBIAS: BIAS voltage disabled
- 	RegWrite(ADS1248.OFC0, 0b00000000);	# OFC0:  0 => reset offset calibration
-	RegWrite(ADS1248.OFC1, 0b00000000);	# OFC1:  0 => reset offset calibration
-	RegWrite(ADS1248.OFC2, 0b00000000);	# OFC2:  0 => reset offset calibration
-	RegWrite(ADS1248.GPIOCFG, 0b00000000);	# GPIOCFG: we don't use them
-	RegWrite(ADS1248.GPIOCFG, 0b00000000);	# GPIODIR: we don't use them
-	RegWrite(ADS1248.GPIODAT, 0b00000000);	# GPIODAT: we don't use them
+time.sleep(0.02)
 
 ADCinit()
 
@@ -95,8 +93,13 @@ while True:
 
 	GPIO.output("P9_14",GPIO.HIGH)
 
-	ReadADC()
-
+	a=ReadADC()
+	V=(a[0]<<16)+(a[1]<<8)+a[2]
+	print ("Integer reading: %d"%(V))
+	volts=1.0*V/(pow(2,23)-1)*3.37
+	print ("U = %.3f V"%(volts))
+	T=volts*100-273.15;
+	print ("T = %.2f °C"%(T))
 	GPIO.output("P9_14",GPIO.LOW)
 	time.sleep(1)
 
