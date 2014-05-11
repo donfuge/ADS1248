@@ -1,0 +1,5 @@
+#!/bin/bash
+
+RRD_DB="/home/root/rrd_db/temperature.rrd"
+GRAPH_DIR="/www/pages/"
+GET_TEMP="/home/root/ADS1248/getTemperature.py"
