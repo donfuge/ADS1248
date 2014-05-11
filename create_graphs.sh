@@ -1,5 +1,5 @@
 #!/bin/bash
-source LOG_CONFIG
+source $(dirname $0)/LOG_CONFIG
 
 HOUR=3600
 DAY=$((24*$HOUR))
