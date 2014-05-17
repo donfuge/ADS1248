@@ -1,1 +1,4 @@
 Interfacing the ADS1248 via SPI to the BeagleBone Black in Python using the Adafruit library
+
+- minimal code to read a voltage
+- RRDtool for graphing
