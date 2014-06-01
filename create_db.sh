@@ -1,5 +1,5 @@
 #!/bin/bash
-source LOG_CONFIG
+source $(dirname $0)/LOG_CONFIG
 
 rrdtool create $RRD_DB --start N --step 60 \
 DS:temperature:GAUGE:600:U:U \
